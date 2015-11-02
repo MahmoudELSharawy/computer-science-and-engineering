@@ -11,35 +11,47 @@ int calculatePaddingBytes(long width) {
         }
 }
 
-long getWidth(char header[]) {
+long getWidth(char header[], int parseIndex) {
 	int shift = 24;
-	int position = 21;
+	int bytesParsed = 0;
 	long width = 0;
 	do {
 		long empty = 0;
-		width += ((empty |= header[position]) << shift);
+		width += ((empty |= header[parseIndex]) << shift);
 		shift = shift - 8;
-		position--;
-	} while(position > 17);
+		parseIndex--;
+		bytesParsed++;
+	} while(bytesParsed < 4);
 	return width;
 }
 
 int main (int argc, char *argv[]) {
         char header[54];
         int i = 0;
-        int j = 0;
+//      int j = 0; 		//counter for // do while loop
         long size = 0;
         char blue;
         char green;
         char red;
         long width;
         FILE* inputF;
+
+	//header entry points
+	int widthIndex = 21;
+	int fileSizeIndex = 5;
+
+
         inputF = fopen(argv[1], "r");
+
+
+	/*
 
         fseek(inputF, 0L, SEEK_END);
         size = ftell(inputF);
         fseek(inputF, 0L, SEEK_SET);
         printf("File is %lu bytes long\n", size);
+
+	*/
 
 
         if (inputF == NULL) {
@@ -70,8 +82,12 @@ int main (int argc, char *argv[]) {
 		fscanf(inputF, "%c", &red);
         printf("First Pixel Color Values:\nRed: %d Green: %d Blue: %d \n", red, green, blue);
 
+	size = getWidth(header, fileSizeIndex);
+	printf("The file is %lu bytes in size\n", size);
+	printf("This includes a 54 byte header and %lu bytes of image data, including padding bytes\n", size - 54);
+		
 
-	width = getWidth(header);
+	width = getWidth(header, widthIndex);
         printf("The image is %lu pixels wide\n", width);
 
    	return 0;
