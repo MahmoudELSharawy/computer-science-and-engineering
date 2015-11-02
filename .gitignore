@@ -1,3 +1,14 @@
 .idea
+
+#Vim
 *.swp
 *.swo
+
+#GCC
+*.out
+
+#Bitmaps
+*.bmp
+
+#Node
+npm-debug.log
